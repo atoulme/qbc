@@ -47,7 +47,7 @@ Quorum by ConsenSys is a collective effort of [ConsenSys](https://consensys.net/
 
 ## Report issues
 
-You are welcome to report issues and participate in making this project better through Github issues.
+You are welcome to report issues and participate in making this project better through [Github issues](https://www.github.com/ConsenSys/qbc/issues).
 
 We recommend you read [our contribution guidelines](https://www.github.com/consensys/qbc/tree/master/CONTRIBUTING.md) prior to contributing to familiarize yourself with the project development guidelines.
 
