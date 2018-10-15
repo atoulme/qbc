@@ -1,1 +1,3 @@
-theme: jekyll-theme-slate
+theme: jekyll-theme-primer
+title: Quorum by ConsenSys
+description: A distribution of Quorum supported by ConsenSys
