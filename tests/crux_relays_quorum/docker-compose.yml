@@ -1,0 +1,179 @@
+version: "3.4"
+services:
+
+  crux1: &crux_node
+    image: consensys/crux:latest
+    container_name: crux1
+    expose:
+      - "9000"
+      - "9001"
+    restart: always
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.11
+    environment:
+      - HOSTNAME=crux1
+      - OTHER_NODES=http://relay2:9002/
+    volumes:
+      - ${WORKDIR}/c1:/var/cdata/
+      - ${WORKDIR}/q1:/var/qdata/
+
+  crux2:
+    <<: *crux_node
+    container_name: crux2
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.12
+    environment:
+      - HOSTNAME=crux2
+      - OTHER_NODES=http://relay1:9003/
+    volumes:
+      - ${WORKDIR}/c2:/var/cdata/
+      - ${WORKDIR}/q2:/var/qdata/
+
+  crux3:
+    <<: *crux_node
+    container_name: crux3
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.13
+    environment:
+      - HOSTNAME=crux3
+      - OTHER_NODES=http://relay2:9004/
+    volumes:
+      - ${WORKDIR}/c3:/var/cdata/
+      - ${WORKDIR}/q3:/var/qdata/
+
+  crux4:
+    <<: *crux_node
+    container_name: crux4
+    ports:
+      - 19004:9000
+      - 19014:9001
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.14
+    environment:
+      - HOSTNAME=crux4
+      - OTHER_NODES=http://relay1:9001/
+    volumes:
+      - ${WORKDIR}/c4:/var/cdata/
+      - ${WORKDIR}/q4:/var/qdata/
+      
+  relay1: &relay_node
+    container_name: relay1
+    image: nginx:1.15.5
+    restart: always
+    depends_on:
+      - crux1
+      - crux2
+      - crux3
+      - crux4
+    ports:
+      - 3001:9001
+      - 3002:9002
+      - 3003:9003
+      - 3004:9004
+      - 3011:19011
+      - 3012:19012
+      - 3013:19013
+      - 3014:19014
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.21
+    environment:
+      - HOSTNAME=relay1
+    volumes:
+      - ./nginx_config/crux_proxy.conf:/etc/nginx/nginx.conf
+      - ${WORKDIR}/r1/logs:/var/log/nginx/
+      
+  relay2:
+    <<: *relay_node
+    container_name: relay2
+    ports:
+      - 4001:9001
+      - 4002:9002
+      - 4003:9003
+      - 4004:9004
+      - 4011:19011
+      - 4012:19012
+      - 4013:19013
+      - 4014:19014
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.22
+    environment:
+      - HOSTNAME=relay2
+    volumes:
+      - ./nginx_config/crux_proxy.conf:/etc/nginx/nginx.conf
+      - ${WORKDIR}/r2/logs:/var/log/nginx/
+      
+
+  node1: &quorum_crux_node
+    image: consensys/quorum:latest
+    container_name: quorum1
+    ports:
+      - 22001:22000
+      - 21001:21000
+    restart: always
+    depends_on:
+      - crux1
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.15
+    volumes:
+      - ./contract:/var/contract
+      - ${WORKDIR}/q1:/var/qdata/
+
+  node2:
+    <<: *quorum_crux_node
+    container_name: quorum2
+    ports:
+      - 22002:22000
+      - 21002:21000
+    depends_on:
+      - crux2
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.16
+    volumes:
+      - ./contract:/var/contract
+      - ${WORKDIR}/q2:/var/qdata/
+
+  node3:
+    <<: *quorum_crux_node
+    container_name: quorum3
+    ports:
+      - 22003:22000
+      - 21003:21000
+    depends_on:
+      - crux3
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.17
+    volumes:
+      - ./contract:/var/contract
+      - ${WORKDIR}/q3:/var/qdata/
+
+  node4:
+    <<: *quorum_crux_node
+    container_name: quorum4
+    ports:
+      - 22004:22000
+      - 21004:21000
+    depends_on:
+      - crux4
+    networks:
+      quorum_net:
+        ipv4_address: 10.5.0.18
+    volumes:
+      - ./contract:/var/contract
+      - ${WORKDIR}/q4:/var/qdata/
+
+networks:
+  quorum_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.0.0/24
