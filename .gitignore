@@ -9,3 +9,6 @@ tests/crux_quorum/.check_up
 tests/constellation_quorum/.start
 tests/constellation_quorum/.workdir
 tests/constellation_quorum/.check_up
+tests/crux_relays_quorum/.start
+tests/crux_relays_quorum/.workdir
+tests/crux_relays_quorum/.check_up
