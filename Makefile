@@ -36,8 +36,12 @@ quorum-$(QUORUM_VERSION)-linux-amd64/build/bin/geth: quorum-$(QUORUM_VERSION)-li
 
 build/quorum-$(QUORUM_VERSION)-linux-amd64.tar.gz: quorum-$(QUORUM_VERSION)-linux-amd64/build/bin/geth
 	mkdir -p build
+	mkdir -p quorum-$(QUORUM_VERSION)-linux-amd64/build/opt/libs
+	docker run -it -v $(CURDIR)/quorum-$(QUORUM_VERSION)-linux-amd64:/tmp/geth consensys/linux-build:$(VERSION) /bin/bash -c "ldd /tmp/geth/build/bin/geth | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/geth/build//opt/libs/"
+	docker run -it -v $(CURDIR)/quorum-$(QUORUM_VERSION)-linux-amd64:/tmp/geth consensys/linux-build:$(VERSION) /bin/bash -c "ldd /tmp/geth/build/bin/bootnode | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/geth/build/opt/libs/"
 	tar cf build/quorum-$(QUORUM_VERSION)-linux-amd64.tar -C docs/quorum .
 	tar rf build/quorum-$(QUORUM_VERSION)-linux-amd64.tar -C quorum-$(QUORUM_VERSION)-linux-amd64/build/bin geth bootnode
+	cd quorum-$(QUORUM_VERSION)-linux-amd64/build && find . -name '*.so.*' | xargs tar rf $(CURDIR)/build/quorum-$(QUORUM_VERSION)-linux-amd64.tar
 	gzip build/quorum-$(QUORUM_VERSION)-linux-amd64.tar
 
 constellation-$(CONSTELLATION_VERSION):
@@ -80,10 +84,11 @@ constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin/constellation-node: const
 
 build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar.gz: constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin/constellation-node
 	mkdir -p build
+	mkdir -p constellation-$(CONSTELLATION_VERSION)-linux-amd64/build/opt/libs
 	docker run -it -v $(CURDIR)/constellation-$(CONSTELLATION_VERSION)-linux-amd64:/tmp/constellation consensys/linux-build:$(VERSION) /bin/bash -c "cp /tmp/constellation/.stack-work/install/x86_64-linux/lts-10.5/8.2.2/bin/constellation-node /tmp/constellation/bin/ && ldd /tmp/constellation/bin/constellation-node | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/constellation/bin/"
 	tar cf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar -C docs/constellation .
-	tar rf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar -C constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin constellation-node
-	find constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin -name '*.so.*' | xargs tar rf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar
+	tar rf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar -C constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin constellation-node``
+	cd constellation-$(CONSTELLATION_VERSION)-linux-amd64/build && find . -name '*.so.*' | xargs tar rf $(CURDIR)/build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar
 	gzip build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar
 
 crux-$(CRUX_VERSION)-linux-amd64/bin/crux: crux-$(CRUX_VERSION)-linux-amd64 build/.docker-build-$(VERSION)

@@ -7,7 +7,7 @@ done
 
 GETH_ARGS="--syncmode full --mine --port 21000 --rpc --rpcport 22000 --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul --nodiscover --datadir /var/qdata/dd --nodekey /var/qdata/nodekey --unlock 0 --password /var/qdata/passwords.txt"
 if [ ! -f /var/qdata/tm.conf ]; then
-    PRIVATE_CONFIG=../var/qdata/tm.ipc /opt/geth $GETH_ARGS --verbosity=6 2>>/var/qdata/logs/node.log
+    exec env LD_LIBRARY_PATH=/opt/libs PRIVATE_CONFIG=../var/qdata/tm.ipc /opt/geth $GETH_ARGS --verbosity=6 >> /var/qdata/logs/node.log 2>&1
 else
-    PRIVATE_CONFIG=/var/qdata/tm.conf /opt/geth $GETH_ARGS --verbosity=6 2>>/var/qdata/logs/node.log
+    exec env LD_LIBRARY_PATH=/opt/libs PRIVATE_CONFIG=/var/qdata/tm.conf /opt/geth $GETH_ARGS --verbosity=6 >> /var/qdata/logs/node.log 2>&1
 fi
