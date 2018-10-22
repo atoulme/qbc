@@ -74,7 +74,7 @@ build/crux-$(CRUX_VERSION)-darwin-64.tar.gz: crux-$(CRUX_VERSION)/bin/crux
 crux-$(CRUX_VERSION)-linux-amd64:
 	git clone --branch $(CRUX_VERSION) --depth 1 https://github.com/blk-io/crux.git crux-$(CRUX_VERSION)-linux-amd64
 
-build/.docker-build-$(VERSION):
+build/.docker-build-$(VERSION): docker/linux-build.Dockerfile
 	mkdir -p build
 	docker build -f docker/linux-build.Dockerfile -t consensys/linux-build:$(VERSION) .
 	touch build/.docker-build-$(VERSION)
@@ -100,17 +100,17 @@ build/crux-$(CRUX_VERSION)-linux-amd64.tar.gz: crux-$(CRUX_VERSION)-linux-amd64/
 	tar rf build/crux-$(CRUX_VERSION)-linux-amd64.tar -C crux-$(CRUX_VERSION)-linux-amd64/bin crux
 	gzip build/crux-$(CRUX_VERSION)-linux-amd64.tar
 
-build/.docker-$(VERSION)-quorum: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz
+build/.docker-$(VERSION)-quorum: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz docker/quorum-start.sh docker/quorum.Dockerfile
 	docker build -f docker/quorum.Dockerfile -t consensys/quorum:$(VERSION) .
 	docker tag consensys/quorum:$(VERSION) consensys/quorum:latest
 	touch build/.docker-$(VERSION)-quorum
 
-build/.docker-$(VERSION)-crux: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz
+build/.docker-$(VERSION)-crux: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz docker/crux-start.sh docker/crux.Dockerfile
 	docker build -f docker/crux.Dockerfile -t consensys/crux:$(VERSION) .
 	docker tag consensys/crux:$(VERSION) consensys/crux:latest
 	touch build/.docker-$(VERSION)-crux
 
-build/.docker-$(VERSION)-constellation: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz
+build/.docker-$(VERSION)-constellation: build/qbc-$(VERSION)-linux-amd64.tar.gz build/qbc-$(VERSION)-darwin-64.tar.gz docker/constellation-start.sh docker/constellation.Dockerfile
 	docker build -f docker/constellation.Dockerfile -t consensys/constellation:$(VERSION) .
 	docker tag consensys/constellation:$(VERSION) consensys/constellation:latest
 	touch build/.docker-$(VERSION)-constellation
