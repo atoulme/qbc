@@ -80,7 +80,7 @@ constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin/constellation-node: const
 
 build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar.gz: constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin/constellation-node
 	mkdir -p build
-	docker run -it -v $(CURDIR)/constellation-v0.3.2-linux-amd64:/tmp/constellation consensys/linux-build:0.3 /bin/bash -c "cp /tmp/constellation/.stack-work/install/x86_64-linux/lts-10.5/8.2.2/bin/constellation-node /tmp/constellation/bin/ && ldd /tmp/constellation/bin/constellation-node | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/constellation/bin/"
+	docker run -it -v $(CURDIR)/constellation-$(CONSTELLATION_VERSION)-linux-amd64:/tmp/constellation consensys/linux-build:$(VERSION) /bin/bash -c "cp /tmp/constellation/.stack-work/install/x86_64-linux/lts-10.5/8.2.2/bin/constellation-node /tmp/constellation/bin/ && ldd /tmp/constellation/bin/constellation-node | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/constellation/bin/"
 	tar cf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar -C docs/constellation .
 	tar rf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar -C constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin constellation-node
 	find constellation-$(CONSTELLATION_VERSION)-linux-amd64/bin -name '*.so.*' | xargs tar rf build/constellation-$(CONSTELLATION_VERSION)-linux-amd64.tar
