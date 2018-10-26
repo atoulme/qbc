@@ -5,15 +5,15 @@ Distribution of Quorum and associated projects, tested and supported by ConsenSy
 # Download
 
 You can download binaries created with this project under:
-   https://consensys.bintray.com/binaries/qbc/0.2/
+   https://consensys.bintray.com/binaries/qbc/$VERSION
 
 # Docker images
 
 You can pull Docker images for Quorum, Crux, and Constellation:
 ```
-docker pull consensys-docker-qbc.bintray.io/qbc/quorum:0.2
-docker pull consensys-docker-qbc.bintray.io/qbc/crux:0.2
-docker pull consensys-docker-qbc.bintray.io/qbc/constellation:0.2
+docker pull consensys-docker-qbc.bintray.io/qbc/quorum:$VERSION
+docker pull consensys-docker-qbc.bintray.io/qbc/crux:$VERSION
+docker pull consensys-docker-qbc.bintray.io/qbc/constellation:$VERSION
 ```
 
 # Development
