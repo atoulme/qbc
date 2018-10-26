@@ -1,4 +1,4 @@
-# Quorum By ConsenSys
+# Quorum By ConsenSys [![CircleCI](https://circleci.com/gh/ConsenSys/qbc.svg?style=svg)](https://circleci.com/gh/ConsenSys/qbc)
 
 Distribution of Quorum and associated projects, tested and supported by ConsenSys.
 
