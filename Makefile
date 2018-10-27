@@ -87,19 +87,16 @@ $(BUILDDIR)/.dockerpush: $(BUILDDIR)/.dockerlogin $(addprefix $(BUILDDIR)/.docke
 	touch $(BUILDDIR)/.dockerpush
 
 $(BUILDDIR)/.dockerlogin: 
-	docker login -u $(BINTRAY_USER) -p $(BINTRAY_KEY) consensys-docker-qbc.bintray.io
+	docker login
 	
 $(BUILDDIR)/.dockerpush-$(VERSION)-quorum:
-	docker tag consensys/quorum:$(VERSION) consensys-docker-qbc.bintray.io/consensys/quorum:$(VERSION)
-	docker push consensys-docker-qbc.bintray.io/consensys/quorum:$(VERSION) && touch $@
+	docker push consensys/quorum:$(VERSION) && touch $@
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-constellation:
-	docker tag consensys/constellation:$(VERSION) consensys-docker-qbc.bintray.io/consensys/constellation:$(VERSION)
-	docker push consensys-docker-qbc.bintray.io/consensys/constellation:$(VERSION) && touch $@
+	docker push consensys/constellation:$(VERSION) && touch $@
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-crux:
-	docker tag consensys/crux:$(VERSION) consensys-docker-qbc.bintray.io/consensys/crux:$(VERSION)
-	docker push consensys-docker-qbc.bintray.io/consensys/crux:$(VERSION) && touch $@
+	docker push consensys/crux:$(VERSION) && touch $@
 
 $(BUILDDIR)/.tgzpush: $(addsuffix .tar.gz.asc, $(addprefix $(BUILDDIR)/qbc-$(VERSION)-, $(BUILDS)))
 	touch $(BUILDDIR)/.tgzpush

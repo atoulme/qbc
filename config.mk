@@ -5,7 +5,7 @@
 # QBC is the name of the distribution
 QBC_NAME = qbc
 # increment the qbc version when a new release is made
-VERSION = 0.3
+VERSION = 0.4
 # directory to build the qbc project
 BUILDDIR = build
 # list of build targets: linux|darwin-64|32
