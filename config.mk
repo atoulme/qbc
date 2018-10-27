@@ -28,7 +28,7 @@ BINTRAY_KEY = pass
 #   PROJECT_REPO = the url of the git repo
 #   PROJECT_BUILD = build command
 #   PROJECT_BINPATH = path to the executable (full or relative to project rootroot)
-#   PROJECT_OUTFILES = exedcutable name(s)
+#   PROJECT_OUTFILES = executable name(s)
 ######################################################################
 # quorum config vars
 QUORUM_NAME = quorum
