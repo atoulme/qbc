@@ -83,23 +83,31 @@ release: tag $(BUILDDIR)/.dockerpush $(BUILDDIR)/.tgzpush
 tag:
 	git tag -s $(VERSION)
 
-$(BUILDDIR)/.dockerpush: $(BUILDDIR)/.dockerlogin $(addprefix $(BUILDDIR)/.docker-, $(shell echo $(PROJECTS) | tr '[:upper:]' '[:lower:]'))
+$(BUILDDIR)/.dockerpush: $(BUILDDIR)/.dockerlogin $(addprefix $(BUILDDIR)/.dockerpush-$(VERSION)-, $(shell echo $(PROJECTS) | tr '[:upper:]' '[:lower:]'))
 	touch $(BUILDDIR)/.dockerpush
 
 $(BUILDDIR)/.dockerlogin: 
 	docker login -u $(BINTRAY_USER) -p $(BINTRAY_KEY) consensys-docker-qbc.bintray.io
 	
-$(BUILDDIR)/.dockerpush-$(VERSION)-%: containers
-	docker tag consensys/:$(VERSION) consensys-docker-qbc.bintray.io/consensys/$*:$(VERSION)
-	docker push consensys-docker-qbc.bintray.io/consensys/$*:$(VERSION) && touch $@
+$(BUILDDIR)/.dockerpush-$(VERSION)-quorum:
+	docker tag consensys/quorum:$(VERSION) consensys-docker-qbc.bintray.io/consensys/quorum:$(VERSION)
+	docker push consensys-docker-qbc.bintray.io/consensys/quorum:$(VERSION) && touch $@
+
+$(BUILDDIR)/.dockerpush-$(VERSION)-constellation:
+	docker tag consensys/constellation:$(VERSION) consensys-docker-qbc.bintray.io/consensys/constellation:$(VERSION)
+	docker push consensys-docker-qbc.bintray.io/consensys/constellation:$(VERSION) && touch $@
+
+$(BUILDDIR)/.dockerpush-$(VERSION)-crux:
+	docker tag consensys/crux:$(VERSION) consensys-docker-qbc.bintray.io/consensys/crux:$(VERSION)
+	docker push consensys-docker-qbc.bintray.io/consensys/crux:$(VERSION) && touch $@
 
 $(BUILDDIR)/.tgzpush: $(addsuffix .tar.gz.asc, $(addprefix $(BUILDDIR)/qbc-$(VERSION)-, $(BUILDS)))
 	touch $(BUILDDIR)/.tgzpush
 
 $(BUILDDIR)/qbc-$(VERSION)-%: qbc-tarballs
 	gpg --detach-sign -o $@ $(subst .asc,,$@)
-	curl -T $@ -u$(BINTRAY_USER):$(BINTRAY_KEY) -H "X-Bintray-Package:qbc" -H "X-Bintray-Version:$(VERSION)" https://api.bintray.com/content/consensys/binaries/qbc/$(VERSION)/qbc-$(VERSION)-$*.tar.gz
-	curl -T $@.asc -u$(BINTRAY_USER):$(BINTRAY_KEY) -H "X-Bintray-Package:qbc" -H "X-Bintray-Version:$(VERSION)" https://api.bintray.com/content/consensys/binaries/qbc/$(VERSION)/qbc-$(VERSION)-$*.tar.gz.asc
+	curl -T $@ -u$(BINTRAY_USER):$(BINTRAY_KEY) -H "X-Bintray-Package:qbc" -H "X-Bintray-Version:$(VERSION)" https://api.bintray.com/content/consensys/binaries/qbc/$(VERSION)/qbc-$(VERSION)-$*
+	curl -T $(subst .asc,,$@) -u$(BINTRAY_USER):$(BINTRAY_KEY) -H "X-Bintray-Package:qbc" -H "X-Bintray-Version:$(VERSION)" https://api.bintray.com/content/consensys/binaries/qbc/$(VERSION)/qbc-$(VERSION)-$(subst .asc,,$*)
 
 circleci-macos: 
 	mkdir -p $(BUILDDIR) && touch $(BUILDDIR)/.docker-build-$(VERSION) && $(MAKE) tarball-darwin-64
