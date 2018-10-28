@@ -29,7 +29,7 @@ for ip in ${ips[*]}; do
     enode=`docker run -v $WORKDIR/q${i}:/var/qdata/ consensys/quorum:latest sh -c "/opt/bootnode -genkey /var/qdata/dd/nodekey -writeaddress; cat /var/qdata/dd/nodekey"`;
     enode=`docker run -v $WORKDIR/q${i}:/var/qdata/ consensys/quorum:latest sh -c "/opt/bootnode -nodekeyhex $enode -writeaddress"`;
     sep=`[[ $i < ${#ips[@]} ]] && echo ","`;
-    echo '  "enode://'$enode'@'$ip':21000?discport=0"'$sep >> $WORKDIR/q1/dd/static-nodes.json;
+    echo '  "enode://'$enode'@'$ip':21000?discport=0"'$sep >> $WORKDIR/q${i}/dd/static-nodes.json;
     let i++;
 done
 echo "]" >> $WORKDIR/q1/dd/static-nodes.json
