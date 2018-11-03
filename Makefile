@@ -2,9 +2,10 @@ SHELL := /bin/bash
 
 include config.mk
 
-PROJECTS = $(shell echo $(QUORUM_NAME) $(CONSTELLATION_NAME) $(CRUX_NAME) $(ISTANBUL_NAME) | tr '[:lower:]' '[:upper:]')
+PROJECTS = $(shell echo $(QUORUM_NAME) $(CONSTELLATION_NAME) $(CRUX_NAME) $(BLOCKSCOUT_NAME) $(ISTANBUL_NAME) | tr '[:lower:]' '[:upper:]')
 PACKAGES = $(foreach project,$(PROJECTS), $(foreach build,$(BUILDS), $($(project)_NAME)-$($(project)_VERSION)-$(build) ) )
-RUN_CONTAINERS = $(firstword $(BUILDS))-docker-$(QUORUM_NAME) $(firstword $(BUILDS))-docker-$(CONSTELLATION_NAME) $(firstword $(BUILDS))-docker-$(CRUX_NAME) $(firstword $(BUILDS))-docker-$(ISTANBUL_NAME)
+RUN_CONTAINERS = $(firstword $(BUILDS))-docker-$(QUORUM_NAME) $(firstword $(BUILDS))-docker-$(CONSTELLATION_NAME) $(firstword $(BUILDS))-docker-$(CRUX_NAME) $(firstword $(BUILDS))-docker-$(BLOCKSCOUT_NAME) $(firstword $(BUILDS))-docker-$(ISTANBUL_NAME)
+
 BUILD_CONTAINERS = docker-build-$(VERSION)
 
 .PHONY: all qbc qbc-containers qbc-tarballs test release tag circleci-macos clean check_clobber clobber
@@ -51,8 +52,8 @@ $(PACKAGES): $(addprefix .build~,$(PACKAGES))
 .build~%: $(addprefix .clone~,$(PACKAGES)) | $(BUILD_CONTAINERS)
 	$(eval PACKAGE = $*)
 	$(eval PROJECT = $(shell echo $(firstword $(subst -, ,$(PACKAGE)))| tr '[:lower:]' '[:upper:]'))
-	$(eval CONTAINER_$(PROJECT)_BUILD = docker run -i -v $(shell pwd)/$(BUILDDIR)/$(PACKAGE):/tmp/$($(PROJECT)_NAME) consensys/linux-build:$(VERSION) ./build-$($(PROJECT)_NAME).sh)
-		@test -e $(BUILDDIR)/$@ \
+	$(eval CONTAINER_$(PROJECT)_BUILD = docker run -it -v $(shell pwd)/$(BUILDDIR)/$(PACKAGE):/tmp/$($(PROJECT)_NAME) consensys/linux-build:$(VERSION) ./build-$($(PROJECT)_NAME).sh)
+	@test -e $(BUILDDIR)/$@ \
 	|| ( [[ "$(PACKAGE)" == *"linux"* ]] && ( cd $(BUILDDIR)/$(PACKAGE) && $(CONTAINER_$(PROJECT)_BUILD) && touch ../$@ ) || echo "SKIP" \
 	&&   [[ "$(PACKAGE)" == *"darwin"* ]] && ( cd $(BUILDDIR)/$(PACKAGE) && $($(PROJECT)_BUILD) && touch ../$@) || echo "SKIP" )
 	
@@ -144,6 +145,9 @@ $(BUILDDIR)/.dockerpush-$(VERSION)-istanbul:
 	docker push consensys/istanbul-tools:$(VERSION)
 	docker push consensys/istanbul-tools:latest
 	touch $@
+
+$(BUILDDIR)/.dockerpush-$(VERSION)-blockscout:
+	docker push consensys/blockscout:$(VERSION) && touch $@
 
 $(BUILDDIR)/.tgzpush: $(addsuffix .tar.gz.asc, $(addprefix $(BUILDDIR)/qbc-$(VERSION)-, $(BUILDS)))
 	touch $(BUILDDIR)/.tgzpush

@@ -34,6 +34,10 @@ cp -R $WORKDIR/q1 $WORKDIR/q2
 cp -R $WORKDIR/q1 $WORKDIR/q3
 cp -R $WORKDIR/q1 $WORKDIR/q4
 
+mkdir -p $WORKDIR/blockscout/logs
+
+mkdir -p $WORKDIR/db
+
 ### Configure tm.conf ###
 
 # nodelist=

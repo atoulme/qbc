@@ -65,3 +65,10 @@ TESSERA_REPO = https://github.com/jpmorganchase/tessera.git
 TESSERA_BUILD = mvn package
 TESSERA_BINPATH = tessera-app/target
 TESSERA_OUTFILES = tessera-app-0.7.3-app.jar
+# blockscout config vars
+BLOCKSCOUT_NAME = blockscout
+BLOCKSCOUT_VERSION = master
+BLOCKSCOUT_REPO = https://github.com/poanetwork/blockscout.git
+BLOCKSCOUT_BUILD = "MIX_ENV=prod mix do deps.get, release --env prod"
+BLOCKSCOUT_BINPATH =
+BLOCKSCOUT_OUTFILES = .
