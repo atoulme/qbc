@@ -3,6 +3,9 @@ ARG osarch
 ARG version
 COPY quorum-${version}-${osarch}.tar.gz /tmp/
 
+RUN apt-get update -qq \
+  && apt-get install -y -q jq zip
+
 RUN cd /opt \
   && tar xzf /tmp/quorum-${version}-${osarch}.tar.gz \
   && rm /tmp/quorum-${version}-${osarch}.tar.gz \

@@ -5,7 +5,9 @@ test:
 	@cd constellation_quorum && ( make stop && cd .. || cd .. )
 	@cd crux_quorum && ( make stop && cd .. || cd .. )
 	@cd crux_relays_quorum && ( make stop && cd .. || cd .. )
+	@cd init_join && ( make stop && cd .. || cd .. )
 	@echo "Run Tests"
 	@cd constellation_quorum && make clean && ( make test && make stop || make stop )
 	@cd crux_quorum && make stop && make clean && ( make test && make stop || make stop )
 	@cd crux_relays_quorum && make stop && make clean && ( make test && make stop || make stop )
+	@cd init_join && make stop && make clean && ( make test && make stop || make stop )

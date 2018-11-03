@@ -1,0 +1,42 @@
+version: "3.2"
+services:
+
+  crux: &crux_node
+    image: consensys/crux:latest
+    container_name: crux-${CONSTELLATION_IP}
+    ports:
+      - "9000"
+      - "9001"
+    restart: always
+    networks:
+      quorum_net:
+        ipv4_address: ${CONSTELLATION_IP}
+    environment:
+      - HOSTNAME=crux-${CONSTELLATION_IP}
+      - OTHER_NODES=http://${FIRST_CONSTELLATION_NODE}:9000/
+    volumes:
+      - ${CONSTELLATION_FOLDER}:/var/cdata/
+      - ${QUORUM_FOLDER}:/var/qdata/
+
+  quorum: &quorum_crux_node
+    image: consensys/quorum:latest
+    container_name: quorum-${QUORUM_IP}
+    ports:
+      - "22000"
+      - "21000"
+    restart: always
+    networks:
+      quorum_net:
+        ipv4_address: ${QUORUM_IP}
+    depends_on:
+      - crux
+    volumes:
+      - ./contract:/var/contract
+      - ${QUORUM_FOLDER}:/var/qdata/
+      - ${WORKDIR}/configs:/var/configs/
+      - ${INITIAL_PASSWORD_FILE}:/var/password/initial_account_password.txt
+    command: /opt/bootstrap.sh join /var/qdata ${QUORUM_IP} /var/configs/join.zip /var/configs/init.zip 
+networks:
+  quorum_net:
+    external:
+      name: scripts_quorum_net

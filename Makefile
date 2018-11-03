@@ -31,6 +31,7 @@ $(PACKAGES): $(addprefix .build~,$(PACKAGES))
 	@test -e $(BUILDDIR)/$@.tar.gz \
 	|| ( echo "BUILD, TAR & GZIP PACKAGE: $@" && cd $(BUILDDIR) \
 	&& tar cf $@.tar -C $(CURDIR)/docs/$($(PROJECT)_NAME) . \
+	&& tar rf $@.tar -C $(CURDIR)/config/$($(PROJECT)_NAME) . \
 	&& tar rf $@.tar -C $@/$($(PROJECT)_BINPATH) $($(PROJECT)_OUTFILES) \
 	&& find $@/$($(PROJECT)_BINPATH) -name '*.so.*' | xargs tar rf $@.tar \
 	&& gzip -f $@.tar )
