@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 include config.mk
 
-PROJECTS = $(shell echo $(QUORUM_NAME) $(CONSTELLATION_NAME) $(CRUX_NAME) | tr '[:lower:]' '[:upper:]')
+PROJECTS = $(shell echo $(QUORUM_NAME) $(CONSTELLATION_NAME) $(CRUX_NAME) $(ISTANBUL_NAME) | tr '[:lower:]' '[:upper:]')
 PACKAGES = $(foreach project,$(PROJECTS), $(foreach build,$(BUILDS), $($(project)_NAME)-$($(project)_VERSION)-$(build) ) )
 RUN_CONTAINERS = $(firstword $(BUILDS))-docker-$(QUORUM_NAME) $(firstword $(BUILDS))-docker-$(CONSTELLATION_NAME) $(firstword $(BUILDS))-docker-$(CRUX_NAME)
 BUILD_CONTAINERS = docker-build-$(VERSION)
@@ -97,6 +97,11 @@ $(BUILDDIR)/.dockerpush-$(VERSION)-constellation:
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-crux:
 	docker push consensys/crux:$(VERSION) && touch $@
+
+$(BUILDDIR)/.dockerpush-$(VERSION)-istanbul-tools:
+	docker tag consensys/istanbul:$(VERSION) consensys/istanbul-tools:$(VERSION)
+	docker push consensys/istanbul-tools:$(VERSION)
+	touch $@
 
 $(BUILDDIR)/.tgzpush: $(addsuffix .tar.gz.asc, $(addprefix $(BUILDDIR)/qbc-$(VERSION)-, $(BUILDS)))
 	touch $(BUILDDIR)/.tgzpush

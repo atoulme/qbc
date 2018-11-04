@@ -21,4 +21,5 @@ ARG CACHEBUST=1
 
 RUN echo "#!/bin/bash\ncd /tmp/constellation && stack --allow-different-user install && cp /root/.local/bin/constellation-node /tmp/constellation/bin/ && ldd /tmp/constellation/bin/constellation-node | cut -f3- -d ' ' | grep '^/.*' | cut -f1 -d ' '| xargs -I '{}' cp -v '{}' /tmp/constellation/bin/" > build-constellation.sh && chmod +x build-constellation.sh \
     && echo "#!/bin/bash\ncd /tmp/crux && make setup && make build" > build-crux.sh && chmod +x build-crux.sh \
-    && echo "#!/bin/bash\ncd /tmp/quorum && make all" > build-quorum.sh && chmod +x build-quorum.sh
+    && echo "#!/bin/bash\ncd /tmp/quorum && make all" > build-quorum.sh && chmod +x build-quorum.sh \
+    && echo "#!/bin/bash\ncd /tmp/istanbul && mkdir -p /tmp/istanbul/.build/src/github.com/jpmorganchase/ && ln -sf /tmp/istanbul /tmp/istanbul/.build/src/github.com/jpmorganchase/istanbul-tools && export GOPATH=/tmp/istanbul/.build && cd /tmp/istanbul/.build/src/github.com/jpmorganchase/istanbul-tools && make" > build-istanbul.sh && chmod +x build-istanbul.sh
