@@ -58,3 +58,10 @@ ISTANBUL_REPO = https://github.com/consensys/istanbul-tools.git
 ISTANBUL_BUILD = mkdir -p .build/src/github.com/jpmorganchase/ && ln -sf `pwd` .build/src/github.com/jpmorganchase/istanbul-tools && export GOPATH=`pwd`/.build && cd .build/src/github.com/jpmorganchase/istanbul-tools && make
 ISTANBUL_BINPATH = build/bin
 ISTANBUL_OUTFILES = istanbul
+# Tessera config vars
+TESSERA_NAME = tessera
+TESSERA_VERSION = tessera-0.7.3
+TESSERA_REPO = https://github.com/jpmorganchase/tessera.git
+TESSERA_BUILD = mvn package
+TESSERA_BINPATH = tessera-app/target
+TESSERA_OUTFILES = tessera-app-0.7.3-app.jar

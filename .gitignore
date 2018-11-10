@@ -12,3 +12,6 @@ tests/constellation_quorum/.check_up
 tests/crux_relays_quorum/.start
 tests/crux_relays_quorum/.workdir
 tests/crux_relays_quorum/.check_up
+tests/tessera_quorum/.start
+tests/tessera_quorum/.workdir
+tests/tessera_quorum/.check_up

@@ -1,0 +1,14 @@
+{
+  "server": {
+  },
+  "alwaysSendTo": [],
+  "keys": {
+      "passwords": [],
+      "keyData": [
+          {
+              "privateKeyPath": "/var/cdata/tm.key",
+              "publicKeyPath": "/var/cdata/tm.pub"
+          }
+      ]
+  }
+}

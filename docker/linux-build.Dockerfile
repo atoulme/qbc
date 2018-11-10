@@ -6,7 +6,7 @@ ENV GOROOT /opt/go
 ENV GOPATH /root/.go
 
 RUN apt-get update -qq \
-    && apt-get -y -qq install libdb-dev libpthread-stubs0-dev build-essential libleveldb-dev libsodium-dev zlib1g-dev libtinfo-dev wget curl git \
+    && apt-get -y -qq install libdb-dev libpthread-stubs0-dev build-essential libleveldb-dev libsodium-dev zlib1g-dev libtinfo-dev wget curl git openjdk-8-jdk\
     && cd /opt && wget -q https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz \
     && tar zxf go${GOVERSION}.linux-amd64.tar.gz \
     && rm go${GOVERSION}.linux-amd64.tar.gz \
@@ -15,6 +15,14 @@ RUN apt-get update -qq \
 
 RUN curl -sSL https://get.haskellstack.org/ | sh && stack setup
 
+RUN mkdir -p /opt \
+    && cd /opt \
+    && wget http://apache.osuosl.org/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz \
+    && tar xzf apache-maven-3.6.0-bin.tar.gz \
+    && rm apache-maven-3.6.0-bin.tar.gz
+    
+ENV M2_HOME /opt/apache-maven-3.6.0
+ENV PATH="/opt/apache-maven-3.6.0/bin:${PATH}"
 ARG CACHEBUST=1
 
 # /tmp/constellation/.stack-work/install/x86_64-linux/lts-10.5/8.2.2/bin
