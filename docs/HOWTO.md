@@ -49,13 +49,22 @@ $ cat $WORKDIR/q1/dd/static-nodes.json
 
 ```
 
-Passwords file
+### Create an initial account
+
+Run:
+`/opt/geth --datadir=$WORKDIR/dd account new`
+
+You will be prompted for a password.
+
+Keep a copy of the address returned by the program. You can also see the private key has been stored as a file under `$WORKDIR/dd/keystore`.
 
 ### Create a genesis file
 
 All nodes should have in common the first block (the genesis block) and a set of common parameters to operate the network.
 
 An example of genesis JSON file is in this repository under `tests/crux_quorum/istanbul-genesis.json`.
+
+Please edit the genesis file and add your account to it with a non-zero balance, so you have some Ether when you start the chain.
 
 The JSON file is ingested by the geth init command to initialize the first block.
 
