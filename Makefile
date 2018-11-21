@@ -21,10 +21,10 @@ qbc: qbc-tarballs qbc-containers
 
 qbc-containers: $(RUN_CONTAINERS)
 
-qbc-tarballs: $(foreach build,$(BUILDS),tarball-$(build))
+qbc-tarballs: $(foreach build,$(BUILDS),build/qbc-$(VERSION)-$(build).tar.gz)
 
-tarball-%: $(PACKAGES)
-	cd $(BUILDDIR) && tar czf qbc-$(VERSION)-$*.tar.gz $(addsuffix .tar.gz, $?)
+build/qbc-$(VERSION)-%.tar.gz: $(PACKAGES)
+	cd $(BUILDDIR) && tar czf qbc-$(VERSION)-$*.tar.gz $(foreach project,$(PROJECTS), $($(project)_NAME)-$($(project)_VERSION)-$*.tar.gz)
 
 $(PACKAGES): $(addprefix .build~,$(PACKAGES))
 	$(eval PROJECT = $(shell echo $(firstword $(subst -, ,$@))| tr '[:lower:]' '[:upper:]'))
@@ -112,7 +112,7 @@ $(BUILDDIR)/qbc-$(VERSION)-%: qbc-tarballs
 	curl -T $(subst .asc,,$@) -u$(BINTRAY_USER):$(BINTRAY_KEY) -H "X-Bintray-Package:qbc" -H "X-Bintray-Version:$(VERSION)" https://api.bintray.com/content/consensys/binaries/qbc/$(VERSION)/qbc-$(VERSION)-$(subst .asc,,$*)
 
 circleci-macos: 
-	mkdir -p $(BUILDDIR) && touch $(BUILDDIR)/.docker-build-$(VERSION) && $(MAKE) tarball-darwin-64
+	mkdir -p $(BUILDDIR) && touch $(BUILDDIR)/.docker-build-$(VERSION) && $(MAKE) build/qbc-$(VERSION)-darwin-64.tar.gz
 
 clean:
 	echo $(BUILDS)

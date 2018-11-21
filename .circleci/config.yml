@@ -7,7 +7,7 @@ jobs:
       - run: brew install go berkeley-db leveldb libsodium maven haskell-stack && stack setup
       - checkout
       - run: cat config.mk | sed 's/BUILDS = linux-64 darwin-64/BUILDS = darwin-64/' > config.mk2 && mv config.mk2 config.mk && mkdir -p build
-      - run: make BUILDS=darwin-64 circleci-macos 
+      - run: make BUILDS=darwin-64 circleci-macos
   linuxbuild:
     machine: true
     steps:
