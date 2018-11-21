@@ -51,3 +51,10 @@ CRUX_REPO = https://github.com/blk-io/crux.git
 CRUX_BUILD = make setup && make
 CRUX_BINPATH = bin
 CRUX_OUTFILES = crux
+# istanbul-tools config vars
+ISTANBUL_NAME = istanbul
+ISTANBUL_VERSION = v1.0.1-grpc
+ISTANBUL_REPO = https://github.com/consensys/istanbul-tools.git
+ISTANBUL_BUILD = mkdir -p .build/src/github.com/jpmorganchase/ && ln -sf `pwd` .build/src/github.com/jpmorganchase/istanbul-tools && export GOPATH=`pwd`/.build && cd .build/src/github.com/jpmorganchase/istanbul-tools && make
+ISTANBUL_BINPATH = build/bin
+ISTANBUL_OUTFILES = istanbul
