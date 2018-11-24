@@ -23,8 +23,16 @@ qbc-containers: $(RUN_CONTAINERS)
 
 qbc-tarballs: $(foreach build,$(BUILDS),build/qbc-$(VERSION)-$(build).tar.gz)
 
-build/qbc-$(VERSION)-%.tar.gz: $(PACKAGES)
-	cd $(BUILDDIR) && tar czf qbc-$(VERSION)-$*.tar.gz $(foreach project,$(PROJECTS), $($(project)_NAME)-$($(project)_VERSION)-$*.tar.gz)
+build/qbc-$(VERSION)-%.tar.gz: $(PACKAGES) tessera-$(TESSERA_VERSION)
+	cd $(BUILDDIR) && tar czf qbc-$(VERSION)-$*.tar.gz $(foreach project,$(PROJECTS), $($(project)_NAME)-$($(project)_VERSION)-$*.tar.gz) tessera-$(TESSERA_VERSION).tar.gz
+
+tessera-$(TESSERA_VERSION): .build~tessera-$(TESSERA_VERSION)
+	$(eval PROJECT= $(TESSERA_NAME)-$(TESSERA_VERSION))
+	@test -e $(BUILDDIR)/$(PROJECT).tar.gz \
+	|| ( echo "BUILD, TAR & GZIP PACKAGE: $(PROJECT)" && cd $(BUILDDIR) \
+	&& tar cf $(PROJECT).tar -C $(CURDIR)/docs/$(TESSERA_NAME) . \
+	&& tar rf $(PROJECT).tar -C $(PROJECT)/$(TESSERA_BINPATH) $(TESSERA_OUTFILES) \
+	&& gzip -f $(PROJECT).tar )
 
 $(PACKAGES): $(addprefix .build~,$(PACKAGES))
 	$(eval PROJECT = $(shell echo $(firstword $(subst -, ,$@))| tr '[:lower:]' '[:upper:]'))
@@ -34,15 +42,20 @@ $(PACKAGES): $(addprefix .build~,$(PACKAGES))
 	&& tar rf $@.tar -C $@/$($(PROJECT)_BINPATH) $($(PROJECT)_OUTFILES) \
 	&& find $@/$($(PROJECT)_BINPATH) -name '*.so.*' | xargs tar rf $@.tar \
 	&& gzip -f $@.tar )
+	
+.build~tessera-$(TESSERA_VERSION): .clone~tessera-$(TESSERA_VERSION)
+	@test -e $(BUILDDIR)/$@ \
+	|| (cd $(BUILDDIR)/tessera-$(TESSERA_VERSION) && mvn package \
+	    && touch ../$@)
 
 .build~%: $(addprefix .clone~,$(PACKAGES)) | $(BUILD_CONTAINERS)
 	$(eval PACKAGE = $*)
 	$(eval PROJECT = $(shell echo $(firstword $(subst -, ,$(PACKAGE)))| tr '[:lower:]' '[:upper:]'))
 	$(eval CONTAINER_$(PROJECT)_BUILD = docker run -i -v $(shell pwd)/$(BUILDDIR)/$(PACKAGE):/tmp/$($(PROJECT)_NAME) consensys/linux-build:$(VERSION) ./build-$($(PROJECT)_NAME).sh)
-	@test -e $(BUILDDIR)/$@ \
+		@test -e $(BUILDDIR)/$@ \
 	|| ( [[ "$(PACKAGE)" == *"linux"* ]] && ( cd $(BUILDDIR)/$(PACKAGE) && $(CONTAINER_$(PROJECT)_BUILD) && touch ../$@ ) || echo "SKIP" \
 	&&   [[ "$(PACKAGE)" == *"darwin"* ]] && ( cd $(BUILDDIR)/$(PACKAGE) && $($(PROJECT)_BUILD) && touch ../$@) || echo "SKIP" )
-
+	
 .clone~%:
 	$(eval PACKAGE = $*)
 	$(eval PROJECT = $(shell echo $(firstword $(subst -, ,$(PACKAGE)))| tr '[:lower:]' '[:upper:]'))
@@ -60,6 +73,18 @@ $(BUILD_CONTAINERS):
 	&& docker build --build-arg CACHEBUST=$(date +%s) -f linux-build.Dockerfile -t consensys/linux-build:$(VERSION) . \
 	&& touch $(CURDIR)/$(BUILDDIR)/.$@ )
 
+$(BUILDDIR)/.docker-$(TESSERA_NAME)-$(TESSERA_VERSION): tessera-$(TESSERA_VERSION)
+	$(eval PROJECT = TESSERA)
+	@test -e $(CURDIR)/$(BUILDDIR)/.docker-$($(PROJECT)_NAME)-$($(PROJECT)_VERSION) || ( echo "BUILDING RUN_CONTAINER: $@" \
+	&& mkdir -p $(CURDIR)/$(BUILDDIR)/docker-$($(PROJECT)_NAME) \
+	&& cp $(CURDIR)/docker/$($(PROJECT)_NAME)-start.sh $(CURDIR)/$(BUILDDIR)/docker-$($(PROJECT)_NAME) \
+	&& mv $(CURDIR)/build/$($(PROJECT)_NAME)-$($(PROJECT)_VERSION).tar.gz $(CURDIR)/$(BUILDDIR)/docker-$($(PROJECT)_NAME) \
+	&& cd $(CURDIR)/$(BUILDDIR)/docker-$($(PROJECT)_NAME) \
+	&& cp ../../docker/$($(PROJECT)_NAME).Dockerfile $($(PROJECT)_NAME).Dockerfile \
+	&& docker build --build-arg version=$($(PROJECT)_VERSION) -f $($(PROJECT)_NAME).Dockerfile -t consensys/$($(PROJECT)_NAME):$(VERSION) . \
+	&& docker tag consensys/$($(PROJECT)_NAME):$(VERSION) consensys/$($(PROJECT)_NAME):latest \
+	&& touch $(CURDIR)/$(BUILDDIR)/.docker-$($(PROJECT)_NAME)-$($(PROJECT)_VERSION) )
+
 $(RUN_CONTAINERS): $(PACKAGES)
 	$(eval PROJECT = $(shell echo $(lastword $(subst -, ,$@))| tr '[:lower:]' '[:upper:]'))
 	$(eval OS = $(shell echo $(word 1, $(subst -, ,$@))))
@@ -74,7 +99,7 @@ $(RUN_CONTAINERS): $(PACKAGES)
 	&& docker tag consensys/$($(PROJECT)_NAME):$(VERSION) consensys/$($(PROJECT)_NAME):latest \
 	&& touch $(CURDIR)/$(BUILDDIR)/.docker-$($(PROJECT)_NAME) )
 
-test: $(RUN_CONTAINERS)
+test: $(RUN_CONTAINERS) $(BUILDDIR)/.docker-$(TESSERA_NAME)-$(TESSERA_VERSION)
 	cd tests && make
 
 release: tag $(BUILDDIR)/.dockerpush $(BUILDDIR)/.tgzpush
@@ -83,7 +108,7 @@ release: tag $(BUILDDIR)/.dockerpush $(BUILDDIR)/.tgzpush
 tag:
 	git tag -s $(VERSION)
 
-$(BUILDDIR)/.dockerpush: $(BUILDDIR)/.dockerlogin $(addprefix $(BUILDDIR)/.dockerpush-$(VERSION)-, $(shell echo $(PROJECTS) | tr '[:upper:]' '[:lower:]'))
+$(BUILDDIR)/.dockerpush: $(BUILDDIR)/.dockerlogin $(addprefix $(BUILDDIR)/.dockerpush-$(VERSION)-, $(shell echo $(PROJECTS) | tr '[:upper:]' '[:lower:]')) $(BUILDDIR)/.dockerpush-$(VERSION)-tessera
 	touch $(BUILDDIR)/.dockerpush
 
 $(BUILDDIR)/.dockerlogin: 
@@ -97,8 +122,11 @@ $(BUILDDIR)/.dockerpush-$(VERSION)-constellation:
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-crux:
 	docker push consensys/crux:$(VERSION) && touch $@
+	
+$(BUILDDIR)/.dockerpush-$(VERSION)-tessera:
+	docker push consensys/tessera:$(VERSION) && touch $@
 
-$(BUILDDIR)/.dockerpush-$(VERSION)-istanbul-tools:
+$(BUILDDIR)/.dockerpush-$(VERSION)-istanbul:
 	docker tag consensys/istanbul:$(VERSION) consensys/istanbul-tools:$(VERSION)
 	docker push consensys/istanbul-tools:$(VERSION)
 	touch $@
