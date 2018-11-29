@@ -115,20 +115,34 @@ $(BUILDDIR)/.dockerlogin:
 	docker login
 	
 $(BUILDDIR)/.dockerpush-$(VERSION)-quorum:
-	docker push consensys/quorum:$(VERSION) && touch $@
+	docker push consensys/quorum:$(VERSION)
+	docker tag consensys/quorum:$(VERSION) consensys/quorum:latest
+	docker push consensys/quorum:latest
+	touch $@
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-constellation:
-	docker push consensys/constellation:$(VERSION) && touch $@
+	docker push consensys/constellation:$(VERSION)
+	docker tag consensys/constellation:$(VERSION) consensys/constellation:latest
+	docker push consensys/constellation:latest
+	touch $@
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-crux:
-	docker push consensys/crux:$(VERSION) && touch $@
+	docker push consensys/crux:$(VERSION)
+	docker tag consensys/crux:$(VERSION) consensys/crux:latest
+	docker push consensys/crux:latest
+	touch $@
 	
 $(BUILDDIR)/.dockerpush-$(VERSION)-tessera:
-	docker push consensys/tessera:$(VERSION) && touch $@
+	docker push consensys/tessera:$(VERSION)
+	docker tag consensys/tessera:$(VERSION) consensys/tessera:latest
+	docker push consensys/tessera:latest
+	touch $@
 
 $(BUILDDIR)/.dockerpush-$(VERSION)-istanbul:
 	docker tag consensys/istanbul:$(VERSION) consensys/istanbul-tools:$(VERSION)
+	docker tag consensys/istanbul:$(VERSION) consensys/istanbul-tools:latest
 	docker push consensys/istanbul-tools:$(VERSION)
+	docker push consensys/istanbul-tools:latest
 	touch $@
 
 $(BUILDDIR)/.tgzpush: $(addsuffix .tar.gz.asc, $(addprefix $(BUILDDIR)/qbc-$(VERSION)-, $(BUILDS)))
