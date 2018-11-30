@@ -19,7 +19,7 @@ all: clean
 
 qbc: qbc-tarballs qbc-containers
 
-qbc-containers: $(RUN_CONTAINERS)
+qbc-containers: $(RUN_CONTAINERS) $(BUILDDIR)/.docker-$(TESSERA_NAME)-$(TESSERA_VERSION)
 
 qbc-tarballs: $(foreach build,$(BUILDS),build/qbc-$(VERSION)-$(build).tar.gz)
 
