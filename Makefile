@@ -4,7 +4,7 @@ include config.mk
 
 PROJECTS = $(shell echo $(QUORUM_NAME) $(CONSTELLATION_NAME) $(CRUX_NAME) $(ISTANBUL_NAME) | tr '[:lower:]' '[:upper:]')
 PACKAGES = $(foreach project,$(PROJECTS), $(foreach build,$(BUILDS), $($(project)_NAME)-$($(project)_VERSION)-$(build) ) )
-RUN_CONTAINERS = $(firstword $(BUILDS))-docker-$(QUORUM_NAME) $(firstword $(BUILDS))-docker-$(CONSTELLATION_NAME) $(firstword $(BUILDS))-docker-$(CRUX_NAME)
+RUN_CONTAINERS = $(firstword $(BUILDS))-docker-$(QUORUM_NAME) $(firstword $(BUILDS))-docker-$(CONSTELLATION_NAME) $(firstword $(BUILDS))-docker-$(CRUX_NAME) $(firstword $(BUILDS))-docker-$(ISTANBUL_NAME)
 BUILD_CONTAINERS = docker-build-$(VERSION)
 
 .PHONY: all qbc qbc-containers qbc-tarballs test release tag circleci-macos clean check_clobber clobber
