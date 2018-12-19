@@ -1,6 +1,11 @@
 # Setting up your own Quorum network
 
-## Set up the Quorum node network with Istanbul tools
+## Easy: Use a script to generate a network
+
+* Review, modify and run the script [`generate_network.sh`](./generate_network.sh)
+* You can jump to [this section](#Quorum-data-folder-structure) to continue setting up your network.
+
+## Intermediate: Set up the Quorum node network with Istanbul tools
 
 To create a network quickly, refer to the [Istanbul tools](https://github.com/getamis/istanbul-tools) guide.
 
@@ -71,7 +76,7 @@ The static-nodes.json file contains the list of the nodes created for the networ
 * You can jump to [this section](#Quorum-data-folder-structure) to continue setting up your network.
 
 
-## Set up the Quorum node network
+## Advanced: Set up the Quorum node network
 
 This is a detailed step by step guide to understand what items you will need to create to make up a Quorum network.
 
@@ -162,7 +167,7 @@ Both files have the same format. Here is an example.
 
 Each enode URI is built with the public key of the node, associated with its host name and RPC port. The discport parameter is set to zero as no discovery is performed on the network.
 
-### Quorum data folder structure
+## Quorum data folder structure
 
 Create the folders as follows:
 
